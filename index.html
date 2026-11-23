@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FixTrail — Student Laptop Repair Bench</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-bench: #F7F5F0;
+      --ink: #1C2321;
+      --teal: #0F766E;
+      --teal-light: #F0FDFA;
+      --teal-dark: #115E59;
+      --border-subtle: #E5E2D9;
+      --card-bg: #FFFFFF;
+      --safe-green: #15803D;
+      --safe-bg: #DCFCE7;
+      --careful-amber: #B45309;
+      --careful-bg: #FEF3C7;
+      --adv-red: #B91C1C;
+      --adv-bg: #FEE2E2;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-bench);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-mono-code {
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .bench-grid {
+      background-image: radial-gradient(#D5D0C3 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #D5D0C3;
+      border-radius: 3px;
+    }
+    @keyframes blink-amber {
+      0%, 100% { opacity: 0.15; box-shadow: none; }
+      50% { opacity: 1; box-shadow: 0 0 14px #F59E0B; }
+    }
+    @keyframes blink-white {
+      0%, 100% { opacity: 0.15; box-shadow: none; }
+      50% { opacity: 1; box-shadow: 0 0 14px #FFFFFF; }
+    }
+    .anim-amber { animation: blink-amber 0.5s infinite; }
+    .anim-white { animation: blink-white 0.5s infinite; }
+    @media print {
+      body { background: white !important; }
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen bench-grid text-[#1C2321] flex flex-col antialiased">
+
+  <!-- Top Realism Bench Header -->
+  <header class="no-print border-b border-[#E5E2D9] bg-[#F7F5F0]/95 backdrop-blur sticky top-0 z-40 px-4 sm:px-6 py-3">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-[#0F766E] flex items-center justify-center text-white font-mono-code font-bold text-base shadow-sm">
+          FT
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold tracking-tight text-lg leading-none">FixTrail</span>
+            <span class="text-[11px] font-mono-code px-2 py-0.5 rounded border border-[#E5E2D9] bg-white text-[#525E59]">Pune Engineering Edition</span>
+          </div>
+          <p class="text-xs text-[#525E59] mt-0.5">Practical student repair bench • Verified hostel guides</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex items-center gap-1 bg-white p-1 rounded-xl border border-[#E5E2D9] text-xs font-medium">
+        <button onclick="setTab('visualizer')" id="tab-visualizer" class="px-3 py-1.5 rounded-lg bg-[#0F766E] text-white transition-all flex items-center gap-1.5 shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+          Hardware Visualizer
+        </button>
+        <button onclick="setTab('triage')" id="tab-triage" class="px-3 py-1.5 rounded-lg text-[#525E59] hover:text-[#1C2321] transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+          Symptom Triage
+        </button>
+        <button onclick="setTab('walkthrough')" id="tab-walkthrough" class="px-3 py-1.5 rounded-lg text-[#525E59] hover:text-[#1C2321] transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+          Step Walkthrough
+        </button>
+        <button onclick="setTab('blink')" id="tab-blink" class="px-3 py-1.5 rounded-lg text-[#525E59] hover:text-[#1C2321] transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          LED Blink & BIOS
+        </button>
+        <button onclick="setTab('slip')" id="tab-slip" class="px-3 py-1.5 rounded-lg text-[#525E59] hover:text-[#1C2321] transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          Service Docket
+        </button>
+      </nav>
+
+      <!-- Live Bench Stats -->
+      <div class="hidden lg:flex items-center gap-4 text-xs">
+        <div class="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E5E2D9] rounded-lg">
+          <span class="w-2 h-2 rounded-full bg-[#15803D] animate-ping"></span>
+          <span class="font-mono-code font-medium">14/19</span>
+          <span class="text-[#525E59]">Inspiron 5567 Fixed</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Work Area -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
+    <!-- Tab 1: Hardware Visualizer -->
+    <section id="panel-visualizer" class="space-y-6">
+      <div class="bg-white rounded-xl border border-[#E5E2D9] p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 shadow-sm">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-lg bg-[#F7F5F0] border border-[#E5E2D9] flex items-center justify-center text-[#0F766E] font-mono-code font-bold text-sm">
+            DELL
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h2 class="text-lg font-bold text-[#1C2321]">Dell Inspiron 15 5567</h2>
+              <span class="px-2 py-0.5 rounded text-[11px] font-mono-code bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC] font-semibold">
+                Risk: Careful (Screw & Clip Removal)
+              </span>
+              <span class="px-2 py-0.5 rounded text-[11px] font-mono-code bg-[#F7F5F0] text-[#525E59] border border-[#E5E2D9]">
+                Hostel Case #PUN-2024-88
+              </span>
+            </div>
+            <p class="text-xs text-[#525E59] mt-1">
+              Active Case: <strong class="text-[#1C2321]">Tanmay Deshmukh</strong> (COEP Tech Pune, Hostel Block D, Room 214) • 
+              Reported: <span class="font-mono-code text-[#1C2321]">"Power LED on, fan spins for 4 sec then dies. Screen pitch black."</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-[#525E59] font-medium">Inspected Failure Mode:</label>
+          <select id="case-selector" onchange="switchCase(this.value)" class="text-xs font-mono-code bg-[#F7F5F0] border border-[#E5E2D9] rounded-lg px-3 py-2 text-[#1C2321] font-semibold focus:outline-none focus:ring-2 focus:ring-[#0F766E]">
+            <option value="ram">RAM Oxidation / Unseated (3 Amber, 2 White)</option>
+            <option value="battery">Swollen 42Wh Battery Pouch (Trackpad Bulging)</option>
+            <option value="fan">Clogged Blower Fan & Dried Thermal Paste</option>
+            <option value="cmos">Dead Coin Cell CMOS (Clock Reset & No Boot)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Motherboard Visualizer and Inspector Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-8 bg-white rounded-xl border border-[#E5E2D9] p-4 sm:p-6 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between pb-3 border-b border-[#E5E2D9] mb-4">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#0F766E]"></span>
+              <h3 class="text-sm font-bold tracking-tight">Interactive Disassembly & Motherboard Map</h3>
+              <span class="text-[11px] text-[#525E59] font-mono-code">[Bottom Cover Removed]</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <span class="text-[#525E59] hidden sm:inline">Click any labeled hotspot:</span>
+              <span class="px-2 py-0.5 rounded bg-[#FEF3C7] text-[#B45309] font-mono-code text-[11px] font-medium border border-[#FDE68A]">4 Active Inspection Points</span>
+            </div>
+          </div>
+
+          <div class="relative w-full bg-[#18231E] rounded-xl p-4 sm:p-6 overflow-hidden border border-[#2D3E36] shadow-inner select-none">
+            <svg class="w-full h-auto max-h-[460px]" viewBox="0 0 800 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="40" y="30" width="720" height="460" rx="14" fill="#1B2E24" stroke="#2D4D3B" stroke-width="3" />
+              <path d="M60 50 H740 M60 70 H400 M500 70 H740 M60 470 H740" stroke="#253E30" stroke-width="1.5" stroke-dasharray="4 4"/>
+              <circle cx="65" cy="55" r="7" fill="#18231E" stroke="#525E59" stroke-width="2" />
+              <circle cx="735" cy="55" r="7" fill="#18231E" stroke="#525E59" stroke-width="2" />
+              <circle cx="65" cy="465" r="7" fill="#18231E" stroke="#525E59" stroke-width="2" />
+              <circle cx="735" cy="465" r="7" fill="#18231E" stroke="#525E59" stroke-width="2" />
+              
+              <!-- CPU & Fan -->
+              <g id="component-heatsink" class="cursor-pointer group" onclick="inspectComponent('fan')">
+                <rect x="360" y="80" width="130" height="90" rx="4" fill="#2E3330" stroke="#4B5563" stroke-width="2"/>
+                <text x="375" y="125" fill="#9CA3AF" font-family="IBM Plex Mono" font-size="11" font-weight="bold">INTEL CORE i5</text>
+                <text x="375" y="142" fill="#6B7280" font-family="IBM Plex Mono" font-size="9">SR2ZU (7200U)</text>
+                <path d="M420 125 L580 125 L580 75 L670 75" stroke="#C26B38" stroke-width="14" stroke-linecap="round"/>
+                <path d="M420 125 L580 125 L580 75 L670 75" stroke="#E0834B" stroke-width="6" stroke-linecap="round"/>
+                <rect x="630" y="50" width="110" height="110" rx="12" fill="#1E2321" stroke="#374151" stroke-width="2"/>
+                <circle cx="685" cy="105" r="42" fill="#111816" stroke="#4B5563" stroke-width="2"/>
+                <circle cx="685" cy="105" r="14" fill="#374151" />
+                <path d="M685 65 L685 85 M685 125 L685 145 M645 105 L665 105 M705 105 L725 105 M657 77 L671 91 M699 119 L713 133 M657 133 L671 119 M699 91 L713 77" stroke="#6B7280" stroke-width="3"/>
+                <text x="645" y="150" fill="#9CA3AF" font-family="IBM Plex Mono" font-size="9">SUNON DC 5V</text>
+              </g>
+
+              <!-- RAM -->
+              <g id="component-ram" class="cursor-pointer" onclick="inspectComponent('ram')">
+                <rect x="230" y="80" width="105" height="150" rx="4" fill="#0D3B25" stroke="#15803D" stroke-width="1.5"/>
+                <rect x="238" y="90" width="89" height="130" rx="3" fill="#1E4430" stroke="#34D399" stroke-width="1"/>
+                <rect x="248" y="100" width="28" height="22" rx="2" fill="#111816" />
+                <rect x="288" y="100" width="28" height="22" rx="2" fill="#111816" />
+                <rect x="248" y="130" width="28" height="22" rx="2" fill="#111816" />
+                <rect x="288" y="130" width="28" height="22" rx="2" fill="#111816" />
+                <rect x="248" y="170" width="68" height="18" rx="2" fill="#F0FDFA" />
+                <text x="252" y="183" fill="#0F766E" font-family="IBM Plex Mono" font-size="7.5" font-weight="bold">8GB 1Rx8 DDR4-2400</text>
+                <path d="M238 220 H327" stroke="#FBBF24" stroke-width="4" stroke-dasharray="2 1"/>
+                <rect x="228" y="100" width="4" height="24" rx="1" fill="#E5E7EB" stroke="#9CA3AF"/>
+                <rect x="325" y="100" width="4" height="24" rx="1" fill="#E5E7EB" stroke="#9CA3AF"/>
+                <rect x="110" y="80" width="105" height="150" rx="4" fill="#162720" stroke="#374151" stroke-width="1.5" stroke-dasharray="3 3"/>
+                <text x="122" y="155" fill="#6B7280" font-family="IBM Plex Mono" font-size="9">DIMM B [EMPTY]</text>
+              </g>
+
+              <!-- CMOS -->
+              <g id="component-cmos" class="cursor-pointer" onclick="inspectComponent('cmos')">
+                <circle cx="160" cy="275" r="22" fill="#374151" stroke="#9CA3AF" stroke-width="2"/>
+                <circle cx="160" cy="275" r="18" fill="#D1D5DB" stroke="#4B5563"/>
+                <text x="146" y="278" fill="#1F2937" font-family="IBM Plex Mono" font-size="8" font-weight="bold">CR2032</text>
+                <text x="149" y="287" fill="#4B5563" font-family="IBM Plex Mono" font-size="7">3 VOLTS</text>
+              </g>
+
+              <!-- SATA HDD -->
+              <rect x="80" y="320" width="220" height="145" rx="6" fill="#202422" stroke="#374151" stroke-width="2"/>
+              <text x="110" y="380" fill="#9CA3AF" font-family="IBM Plex Mono" font-size="12" font-weight="bold">SEAGATE 1TB 5400RPM</text>
+              <text x="110" y="398" fill="#6B7280" font-family="IBM Plex Mono" font-size="9">ST1000LM035 • SATA 6Gb/s</text>
+              <path d="M300 400 L345 400" stroke="#3B82F6" stroke-width="12"/>
+              <rect x="340" y="392" width="12" height="16" fill="#111816" stroke="#9CA3AF"/>
+
+              <!-- Battery -->
+              <g id="component-battery" class="cursor-pointer" onclick="inspectComponent('battery')">
+                <rect x="330" y="260" width="390" height="205" rx="8" fill="#1A1F1D" stroke="#374151" stroke-width="2"/>
+                <rect x="345" y="275" width="115" height="175" rx="4" fill="#262D2A" stroke="#4B5563"/>
+                <rect x="470" y="275" width="115" height="175" rx="4" fill="#262D2A" stroke="#4B5563"/>
+                <rect x="595" y="275" width="110" height="175" rx="4" fill="#262D2A" stroke="#4B5563"/>
+                <text x="440" y="340" fill="#E5E7EB" font-family="IBM Plex Mono" font-size="12" font-weight="bold">DELL 42Wh Type WDX0R</text>
+                <text x="440" y="358" fill="#9CA3AF" font-family="IBM Plex Mono" font-size="10">Standard Rechargeable Li-ion • 11.4V</text>
+                <path d="M345 285 L320 285 L320 230 L360 230" stroke="#111816" stroke-width="8" stroke-linecap="round"/>
+                <rect x="355" y="222" width="24" height="16" fill="#EF4444" rx="2"/>
+                <text x="360" y="233" fill="#FFFFFF" font-family="IBM Plex Mono" font-size="8" font-weight="bold">PULL</text>
+              </g>
+
+              <!-- HOTSPOTS -->
+              <g id="hotspot-ram" class="cursor-pointer" onclick="inspectComponent('ram')">
+                <circle cx="327" cy="112" r="16" fill="#0F766E" fill-opacity="0.2" class="animate-ping" />
+                <circle cx="327" cy="112" r="12" fill="#0F766E" stroke="#FFFFFF" stroke-width="2.5" />
+                <text x="323" y="116" fill="#FFFFFF" font-family="IBM Plex Mono" font-size="11" font-weight="bold">1</text>
+              </g>
+
+              <g id="hotspot-battery" class="cursor-pointer" onclick="inspectComponent('battery')">
+                <circle cx="367" cy="230" r="16" fill="#EF4444" fill-opacity="0.2" class="animate-ping" />
+                <circle cx="367" cy="230" r="12" fill="#B91C1C" stroke="#FFFFFF" stroke-width="2.5" />
+                <text x="363" y="234" fill="#FFFFFF" font-family="IBM Plex Mono" font-size="11" font-weight="bold">2</text>
+              </g>
+
+              <g id="hotspot-fan" class="cursor-pointer" onclick="inspectComponent('fan')">
+                <circle cx="685" cy="105" r="16" fill="#B45309" fill-opacity="0.2" class="animate-ping" />
+                <circle cx="685" cy="105" r="12" fill="#B45309" stroke="#FFFFFF" stroke-width="2.5" />
+                <text x="681" y="109" fill="#FFFFFF" font-family="IBM Plex Mono" font-size="11" font-weight="bold">3</text>
+              </g>
+
+              <g id="hotspot-cmos" class="cursor-pointer" onclick="inspectComponent('cmos')">
+                <circle cx="160" cy="275" r="16" fill="#3B82F6" fill-opacity="0.2" class="animate-ping" />
+                <circle cx="160" cy="275" r="12" fill="#1E40AF" stroke="#FFFFFF" stroke-width="2.5" />
+                <text x="156" y="279" fill="#FFFFFF" font-family="IBM Plex Mono" font-size="11" font-weight="bold">4</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-[#E5E2D9] flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs text-[#525E59]">Quick Select Inspection:</span>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <button onclick="inspectComponent('ram')" class="px-2.5 py-1 rounded bg-[#F0FDFA] hover:bg-[#CCFBF1] text-[#0F766E] font-mono-code text-xs font-semibold border border-[#99F6E4] flex items-center gap-1">
+                <span>[1]</span> RAM Contacts & Clips
+              </button>
+              <button onclick="inspectComponent('battery')" class="px-2.5 py-1 rounded bg-[#FEF2F2] hover:bg-[#FEE2E2] text-[#B91C1C] font-mono-code text-xs font-semibold border border-[#FECACA] flex items-center gap-1">
+                <span>[2]</span> Battery Disconnect Tab
+              </button>
+              <button onclick="inspectComponent('fan')" class="px-2.5 py-1 rounded bg-[#FFFBEB] hover:bg-[#FEF3C7] text-[#B45309] font-mono-code text-xs font-semibold border border-[#FDE68A] flex items-center gap-1">
+                <span>[3]</span> Heatsink & Fan Fins
+              </button>
+              <button onclick="inspectComponent('cmos')" class="px-2.5 py-1 rounded bg-[#EFF6FF] hover:bg-[#DBEAFE] text-[#1D4ED8] font-mono-code text-xs font-semibold border border-[#BFDBFE] flex items-center gap-1">
+                <span>[4]</span> CMOS CR2032 Reset
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inspector Side Panel -->
+        <div class="lg:col-span-4 bg-white rounded-xl border border-[#E5E2D9] p-5 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-[#E5E2D9] mb-4">
+              <span id="inspect-badge" class="px-2 py-0.5 rounded text-[11px] font-mono-code font-bold bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]">
+                DIAGNOSTIC TARGET #1
+              </span>
+              <span class="text-xs text-[#525E59] font-mono-code">Bench Note</span>
+            </div>
+
+            <div id="inspector-content" class="space-y-4">
+              <div>
+                <h4 id="inspect-title" class="text-base font-bold text-[#1C2321]">DDR4 SODIMM RAM Slot & Contacts</h4>
+                <p id="inspect-desc" class="text-xs text-[#525E59] mt-1 leading-relaxed">
+                  The Dell Inspiron 15 5567 uses standard DDR4 2400MHz SODIMM memory. In hostel environments with humidity or after laptop drops in backpacks, fine dust and microscopic copper oxidation prevent clean address pin contact.
+                </p>
+              </div>
+
+              <div class="border border-[#E5E2D9] rounded-lg p-3 bg-[#F7F5F0]">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-[11px] font-mono-code font-semibold text-[#1C2321]">Realistic Visual Check:</span>
+                  <span id="inspect-status" class="text-[10px] font-mono-code px-1.5 py-0.5 rounded bg-[#FEF3C7] text-[#B45309] font-medium border border-[#FDE68A]">
+                    Symptom: 3 Amber, 2 White
+                  </span>
+                </div>
+                <div id="inspect-visual-box" class="w-full h-36 bg-[#18231E] rounded border border-[#2D3E36] flex flex-col items-center justify-center p-3 text-center text-white relative overflow-hidden">
+                  <div class="w-44 h-16 bg-[#1E4430] border-2 border-[#34D399] rounded p-2 flex items-center justify-between shadow-lg transform -rotate-6 transition-transform hover:rotate-0">
+                    <div class="w-6 h-8 bg-black rounded"></div>
+                    <div class="w-6 h-8 bg-black rounded"></div>
+                    <div class="text-[8px] font-mono-code text-emerald-200">8GB DDR4</div>
+                    <div class="w-6 h-8 bg-black rounded"></div>
+                    <div class="w-6 h-8 bg-black rounded"></div>
+                  </div>
+                  <div class="mt-2 text-[10px] font-mono-code text-[#E5E2D9]">
+                    Fingernail press on both side clips &rarr; Module pops up at 30°
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <h5 class="text-xs font-bold text-[#1C2321] uppercase tracking-wider">Required Senior Action:</h5>
+                <ul id="inspect-steps" class="text-xs text-[#525E59] space-y-1.5 list-disc list-inside">
+                  <li>Disconnect battery connector cable <strong>before</strong> touching RAM.</li>
+                  <li>Use two thumbs to spread the silver clips outward until the stick springs up.</li>
+                  <li>Clean the gold fingers firmly with a clean white pencil eraser or 99% IPA.</li>
+                  <li>Seat back firmly into DIMM Slot A at a 30° angle until you hear a sharp mechanical snap.</li>
+                </ul>
+              </div>
+
+              <div class="p-3 bg-[#F0FDFA] border border-[#99F6E4] rounded-lg">
+                <div class="flex items-start gap-2">
+                  <svg class="w-4 h-4 text-[#0F766E] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  <p class="text-xs text-[#115E59] leading-snug">
+                    <strong class="font-semibold">Hostel Evidence:</strong> Reseating memory and cleaning copper oxidation resolved <strong>14 of 19</strong> identical Dell 5567 "black screen with spin-down" tickets in Pune colleges.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-[#E5E2D9] mt-4 flex items-center justify-between">
+            <button onclick="setTab('walkthrough')" class="w-full py-2.5 px-4 rounded-lg bg-[#0F766E] hover:bg-[#115E59] text-white font-semibold text-xs transition-colors flex items-center justify-center gap-2 shadow-sm">
+              <span>Launch Step-by-Step Walkthrough</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screw Organizer -->
+      <div class="bg-white rounded-xl border border-[#E5E2D9] p-5 shadow-sm">
+        <div class="flex items-center justify-between pb-3 border-b border-[#E5E2D9] mb-4">
+          <div>
+            <h3 class="text-sm font-bold text-[#1C2321] flex items-center gap-2">
+              <span>Magnetic Bench Screw Organizer</span>
+              <span class="text-[11px] font-mono-code font-normal text-[#525E59]">Prevent mismatched screw length motherboard puncturing</span>
+            </h3>
+            <p class="text-xs text-[#525E59] mt-0.5">Click screws as you remove them from the laptop chassis to place them in the correct labeled bin.</p>
+          </div>
+          <button onclick="resetScrews()" class="text-xs font-mono-code text-[#0F766E] hover:underline">Reset Tray</button>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div onclick="toggleScrew(1)" id="bin-1" class="border-2 border-dashed border-[#D5D0C3] hover:border-[#0F766E] bg-[#F7F5F0] rounded-lg p-3 cursor-pointer transition-all">
+            <div class="flex items-center justify-between text-xs font-mono-code text-[#525E59]">
+              <span class="font-bold text-[#1C2321]">Rear Hinge Screws</span>
+              <span id="screw-count-1" class="text-[#0F766E] font-bold">2/2</span>
+            </div>
+            <p class="text-[11px] text-[#525E59] mt-1 font-mono-code">M2.5 × 5mm (Silver)</p>
+            <div class="mt-2 flex items-center gap-2" id="screw-icons-1">
+              <span class="w-4 h-4 rounded-full bg-[#9CA3AF] border border-[#4B5563] inline-block shadow"></span>
+              <span class="w-4 h-4 rounded-full bg-[#9CA3AF] border border-[#4B5563] inline-block shadow"></span>
+            </div>
+          </div>
+
+          <div onclick="toggleScrew(2)" id="bin-2" class="border-2 border-dashed border-[#D5D0C3] hover:border-[#0F766E] bg-[#F7F5F0] rounded-lg p-3 cursor-pointer transition-all">
+            <div class="flex items-center justify-between text-xs font-mono-code text-[#525E59]">
+              <span class="font-bold text-[#1C2321]">Base Perimeter</span>
+              <span id="screw-count-2" class="text-[#0F766E] font-bold">8/8</span>
+            </div>
+            <p class="text-[11px] text-[#525E59] mt-1 font-mono-code">M2.0 × 3mm (Black)</p>
+            <div class="mt-2 flex items-center gap-1.5 flex-wrap" id="screw-icons-2">
+              <span class="w-3.5 h-3.5 rounded-full bg-[#1F2937] border border-black inline-block"></span>
+              <span class="w-3.5 h-3.5 rounded-full bg-[#1F2937] border border-black inline-block"></span>
+              <span class="w-3.5 h-3.5 rounded-full bg-[#1F2937] border border-black inline-block"></span>
+              <span class="w-3.5 h-3.5 rounded-full bg-[#1F2937] border border-black inline-block"></span>
+              <span class="w-3.5 h-3.5 rounded-full bg-[#1F2937] border border-black inline-block"></span>
+              <span class="w-3.5 h-3.5 rounded-full bg-[#1F2937] border border-black inline-block"></span>
+              <span class="w-3.5 h-3.5 rounded-full bg-[#1F2937] border border-black inline-block"></span>
+              <span class="w-3.5 h-3.5 rounded-full bg-[#1F2937] border border-black inline-block"></span>
+            </div>
+          </div>
+
+          <div onclick="toggleScrew(3)" id="bin-3" class="border-2 border-dashed border-[#D5D0C3] hover:border-[#0F766E] bg-[#F7F5F0] rounded-lg p-3 cursor-pointer transition-all">
+            <div class="flex items-center justify-between text-xs font-mono-code text-[#525E59]">
+              <span class="font-bold text-[#1C2321]">Battery Bracket</span>
+              <span id="screw-count-3" class="text-[#0F766E] font-bold">4/4</span>
+            </div>
+            <p class="text-[11px] text-[#525E59] mt-1 font-mono-code">M2.0 × 4mm (Wafer)</p>
+            <div class="mt-2 flex items-center gap-2" id="screw-icons-3">
+              <span class="w-3.5 h-3.5 rounded-full bg-[#4B5563] border border-[#111827] inline-block"></span>
+              <span class="w-3.5 h-3.5 rounded-full bg-[#4B5563] border border-[#111827] inline-block"></span>
+              <span class="w-3.5 h-3.5 rounded-full bg-[#4B5563] border border-[#111827] inline-block"></span>
+              <span class="w-3.5 h-3.5 rounded-full bg-[#4B5563] border border-[#111827] inline-block"></span>
+            </div>
+          </div>
+
+          <div onclick="toggleScrew(4)" id="bin-4" class="border-2 border-dashed border-[#D5D0C3] hover:border-[#0F766E] bg-[#F7F5F0] rounded-lg p-3 cursor-pointer transition-all">
+            <div class="flex items-center justify-between text-xs font-mono-code text-[#525E59]">
+              <span class="font-bold text-[#1C2321]">Optical Bay Screw</span>
+              <span id="screw-count-4" class="text-[#0F766E] font-bold">1/1</span>
+            </div>
+            <p class="text-[11px] text-[#525E59] mt-1 font-mono-code">M2.5 × 8mm (Long)</p>
+            <div class="mt-2 flex items-center gap-2" id="screw-icons-4">
+              <span class="w-4 h-4 rounded-full bg-[#D1D5DB] border border-[#6B7280] inline-block shadow"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 2: Triage -->
+    <section id="panel-triage" class="hidden space-y-6">
+      <div id="safety-alert" class="hidden bg-[#FEF2F2] border-2 border-[#EF4444] rounded-xl p-4 sm:p-5 transition-all">
+        <div class="flex items-start gap-3">
+          <div class="w-9 h-9 rounded-lg bg-[#EF4444] text-white flex items-center justify-center shrink-0 font-bold text-lg">!</div>
+          <div>
+            <h4 class="text-sm font-bold text-[#991B1B] uppercase tracking-wide">CRITICAL SAFETY ALERT: HAZARD DETECTED</h4>
+            <p id="safety-text" class="text-xs text-[#B91C1C] mt-1 leading-relaxed font-medium">
+              You mentioned liquid spill or physical battery bulging. <strong>DO NOT plug in the charger under any circumstances.</strong> Disconnect all power leads immediately. Liquid on powered motherboard MOSFETs causes instant copper trace vaporization.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-[#E5E2D9] p-6 shadow-sm">
+        <div class="max-w-2xl mx-auto space-y-6">
+          <div class="border-b border-[#E5E2D9] pb-4">
+            <span class="text-[11px] font-mono-code px-2 py-0.5 rounded bg-[#F7F5F0] text-[#525E59] border border-[#E5E2D9]">Hostel Triage Flow • Step 1 of 3</span>
+            <h2 class="text-xl font-bold text-[#1C2321] mt-2">What happened to your laptop?</h2>
+            <p class="text-xs text-[#525E59] mt-1">Answer honestly. We don't judge spilled tea or dropped bags — we just want to fix it before your submit deadline.</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button onclick="pickSymptom('no-post')" class="p-4 rounded-xl border-2 border-[#E5E2D9] hover:border-[#0F766E] text-left transition-all hover:shadow-sm focus:outline-none focus:border-[#0F766E] group bg-[#F7F5F0]/50">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono-code text-[#0F766E] font-bold">SYMPTOM A</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono-code bg-[#DCFCE7] text-[#15803D]">Safe / Diagnostic</span>
+              </div>
+              <h4 class="text-sm font-bold text-[#1C2321] mt-2 group-hover:text-[#0F766E]">Powers On, Black Screen</h4>
+              <p class="text-xs text-[#525E59] mt-1">Power LED lights up, fan spins briefly or stays loud, but display stays totally off.</p>
+            </button>
+
+            <button onclick="pickSymptom('dead')" class="p-4 rounded-xl border-2 border-[#E5E2D9] hover:border-[#0F766E] text-left transition-all hover:shadow-sm focus:outline-none focus:border-[#0F766E] group bg-[#F7F5F0]/50">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono-code text-[#0F766E] font-bold">SYMPTOM B</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono-code bg-[#FEF3C7] text-[#B45309]">Careful</span>
+              </div>
+              <h4 class="text-sm font-bold text-[#1C2321] mt-2 group-hover:text-[#0F766E]">Completely Dead / No Power LED</h4>
+              <p class="text-xs text-[#525E59] mt-1">Pressing the power button does nothing at all. Charging LED doesn't illuminate.</p>
+            </button>
+
+            <button onclick="pickSymptom('liquid')" class="p-4 rounded-xl border-2 border-[#EF4444] text-left transition-all hover:shadow-sm focus:outline-none group bg-[#FEF2F2]">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono-code text-[#B91C1C] font-bold">SYMPTOM C</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono-code bg-[#FEE2E2] text-[#B91C1C] font-bold">CRITICAL HAZARD</span>
+              </div>
+              <h4 class="text-sm font-bold text-[#991B1B] mt-2">Liquid Spill (Water/Chai/Coffee)</h4>
+              <p class="text-xs text-[#B91C1C] mt-1">Liquid entered keyboard or vents recently, even if wiped off with towel.</p>
+            </button>
+
+            <button onclick="pickSymptom('swollen')" class="p-4 rounded-xl border-2 border-[#F59E0B] text-left transition-all hover:shadow-sm focus:outline-none group bg-[#FFFBEB]">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono-code text-[#B45309] font-bold">SYMPTOM D</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono-code bg-[#FEF3C7] text-[#B45309] font-bold">FIRE RISK</span>
+              </div>
+              <h4 class="text-sm font-bold text-[#92400E] mt-2">Bulging Trackpad / Pop-out Case</h4>
+              <p class="text-xs text-[#B45309] mt-1">Trackpad doesn't click anymore, bottom base is swelling or warped.</p>
+            </button>
+          </div>
+
+          <div class="pt-4 border-t border-[#E5E2D9]">
+            <label class="block text-xs font-bold text-[#1C2321] mb-1.5">Or describe in your own words (Student notes):</label>
+            <div class="relative">
+              <input type="text" id="triage-input" oninput="checkKeywords(this.value)" placeholder="e.g. spilled Maggi soup, 3 amber 2 white blinks, trackpad lifted up..." class="w-full text-xs font-mono-code bg-[#F7F5F0] border border-[#E5E2D9] rounded-lg p-3 text-[#1C2321] focus:outline-none focus:ring-2 focus:ring-[#0F766E]">
+              <button onclick="submitTriage()" class="absolute right-2 top-2 px-3 py-1 bg-[#0F766E] text-white text-xs font-semibold rounded hover:bg-[#115E59]">
+                Analyze
+              </button>
+            </div>
+            <p class="text-[11px] text-[#525E59] mt-1.5">Keywords like "liquid", "chai", "smoke", or "swollen" instantly engage safety locks.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 3: Walkthrough -->
+    <section id="panel-walkthrough" class="hidden space-y-6">
+      <div class="max-w-3xl mx-auto bg-white rounded-xl border border-[#E5E2D9] p-6 shadow-sm">
+        <div class="pb-4 border-b border-[#E5E2D9]">
+          <div class="flex items-center justify-between text-xs mb-2">
+            <span class="font-mono-code font-bold text-[#0F766E]" id="step-number-text">Step 2 of 4</span>
+            <div class="flex items-center gap-3">
+              <span class="text-[#525E59] flex items-center gap-1 font-mono-code">
+                <span id="step-timer">00:45</span>
+              </span>
+              <button onclick="toggleScreenLock()" id="screen-lock-btn" class="px-2 py-0.5 rounded text-[11px] font-mono-code border border-[#E5E2D9] bg-[#F7F5F0] text-[#525E59] hover:bg-white">
+                Keep Screen Awake: ON
+              </button>
+            </div>
+          </div>
+          <div class="w-full h-2 bg-[#F7F5F0] rounded-full overflow-hidden border border-[#E5E2D9]">
+            <div id="step-progress-fill" class="h-full bg-[#0F766E] transition-all duration-300" style="width: 50%;"></div>
+          </div>
+        </div>
+
+        <div class="py-6 space-y-5">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <span class="px-2.5 py-0.5 rounded text-[11px] font-mono-code font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">
+                Careful Action: Disconnect Battery Connector
+              </span>
+              <h2 id="walkthrough-step-title" class="text-xl font-bold text-[#1C2321] mt-2">
+                Safely Release the Battery Pull Tab
+              </h2>
+            </div>
+            <span class="text-xs font-mono-code text-[#525E59] bg-[#F7F5F0] px-2 py-1 rounded border border-[#E5E2D9]">Tool: Plastic Spudger or Fingernail</span>
+          </div>
+
+          <div class="border border-[#E5E2D9] rounded-xl p-4 bg-[#F7F5F0] flex flex-col items-center">
+            <svg class="w-full max-w-md h-40" viewBox="0 0 400 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="20" y="20" width="360" height="120" rx="8" fill="#1F2937" stroke="#374151" stroke-width="2"/>
+              <rect x="60" y="40" width="100" height="80" rx="4" fill="#374151" />
+              <rect x="180" y="40" width="160" height="80" rx="4" fill="#111827" stroke="#4B5563" />
+              <path d="M160 80 L180 80" stroke="#EF4444" stroke-width="6"/>
+              <rect x="165" y="65" width="20" height="30" rx="2" fill="#E5E7EB" stroke="#9CA3AF"/>
+              <text x="195" y="75" fill="#FFFFFF" font-family="IBM Plex Mono" font-size="10" font-weight="bold">MOTHERBOARD HEADER</text>
+              <text x="195" y="92" fill="#9CA3AF" font-family="IBM Plex Mono" font-size="8">PULL TOWARDS BATTERY &rarr;</text>
+              <path d="M140 115 H200 M185 105 L200 115 L185 125" stroke="#F59E0B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <p class="text-[11px] font-mono-code text-[#B45309] font-medium mt-2">
+              CAUTION: Slide parallel to motherboard. Pulling vertically rips the plastic socket pins off the board!
+            </p>
+          </div>
+
+          <div class="space-y-2.5">
+            <h4 class="text-xs font-bold text-[#1C2321] uppercase tracking-wide">Verification Checklist Before Next Step:</h4>
+            <label class="flex items-center gap-3 p-3 rounded-lg border border-[#E5E2D9] hover:bg-[#F7F5F0] cursor-pointer text-xs">
+              <input type="checkbox" id="check-1" onchange="checkStepReady()" class="w-4 h-4 accent-[#0F766E] rounded">
+              <span>Charger barrel cable is completely unplugged from the wall.</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-lg border border-[#E5E2D9] hover:bg-[#F7F5F0] cursor-pointer text-xs">
+              <input type="checkbox" id="check-2" onchange="checkStepReady()" class="w-4 h-4 accent-[#0F766E] rounded">
+              <span>Battery connector is slid out 5mm; power button held for 15 seconds to drain residual charge.</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-[#E5E2D9] flex items-center justify-between gap-4">
+          <button onclick="prevStep()" class="px-4 py-2 rounded-lg border border-[#E5E2D9] text-xs font-medium text-[#525E59] hover:text-[#1C2321]">&larr; Back</button>
+          <div class="flex items-center gap-2">
+            <button onclick="triggerStuckHelp()" class="px-3 py-2 rounded-lg border border-[#FDE68A] bg-[#FEF3C7] text-[#B45309] font-mono-code text-xs font-semibold hover:bg-[#FDE68A]">I'm Stuck Here (Ask Senior)</button>
+            <button onclick="nextStep()" id="next-step-btn" class="px-5 py-2 rounded-lg bg-[#0F766E] hover:bg-[#115E59] text-white text-xs font-semibold shadow-sm">Next: Reseat Memory &rarr;</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="outcome-gate" class="hidden max-w-xl mx-auto bg-white rounded-xl border border-[#E5E2D9] p-6 shadow-sm text-center">
+        <span class="w-10 h-10 rounded-full bg-[#DCFCE7] text-[#15803D] inline-flex items-center justify-center font-bold text-lg mb-2">✓</span>
+        <h3 class="text-lg font-bold text-[#1C2321]">Did it work?</h3>
+        <p class="text-xs text-[#525E59] mt-1">Your honest verdict updates the repair probabilities for other Pune engineering students.</p>
+        
+        <div class="grid grid-cols-2 gap-3 mt-5">
+          <button onclick="submitOutcome('fixed')" class="p-3 rounded-lg border-2 border-[#15803D] bg-[#DCFCE7]/40 hover:bg-[#DCFCE7] text-left">
+            <span class="text-xs font-bold text-[#15803D] block">Yes, Completely Fixed!</span>
+            <span class="text-[11px] text-[#525E59]">Booted into Windows, display crisp.</span>
+          </button>
+          <button onclick="submitOutcome('partial')" class="p-3 rounded-lg border-2 border-[#B45309] bg-[#FEF3C7]/40 hover:bg-[#FEF3C7] text-left">
+            <span class="text-xs font-bold text-[#B45309] block">Partially Helped</span>
+            <span class="text-[11px] text-[#525E59]">Booted once, or fans loud.</span>
+          </button>
+          <button onclick="submitOutcome('unsolved')" class="p-3 rounded-lg border-2 border-[#E5E2D9] hover:border-[#1C2321] text-left">
+            <span class="text-xs font-bold text-[#1C2321] block">Didn't Solve It</span>
+            <span class="text-[11px] text-[#525E59]">Still black screen or same LED blink.</span>
+          </button>
+          <button onclick="submitOutcome('unsafe')" class="p-3 rounded-lg border-2 border-[#EF4444] bg-[#FEE2E2]/40 hover:bg-[#FEE2E2] text-left">
+            <span class="text-xs font-bold text-[#B91C1C] block">Felt Unsafe / Stopped</span>
+            <span class="text-[11px] text-[#525E59]">Tight screw or stripped thread.</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 4: Blink & BIOS -->
+    <section id="panel-blink" class="hidden space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <div class="md:col-span-7 bg-white rounded-xl border border-[#E5E2D9] p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-[#E5E2D9]">
+            <div>
+              <h3 class="text-sm font-bold text-[#1C2321]">LED Diagnostic Blink Simulator</h3>
+              <p class="text-xs text-[#525E59] mt-0.5">Dell & HP use rhythmic color blinks instead of beep speakers.</p>
+            </div>
+            <span class="text-[11px] font-mono-code px-2 py-0.5 rounded bg-[#F7F5F0] text-[#525E59] border border-[#E5E2D9]">Dell Inspiron Series</span>
+          </div>
+
+          <div class="bg-[#18231E] rounded-xl p-6 border border-[#2D3E36] flex flex-col items-center justify-center relative overflow-hidden">
+            <div class="text-[11px] font-mono-code text-[#9CA3AF] mb-4">FRONT STATUS LED BEHAVIOR</div>
+            <div class="w-full max-w-sm h-14 bg-[#262D2A] rounded-lg border-t-2 border-[#4B5563] flex items-center justify-center relative shadow-lg">
+              <div id="simulated-led" class="w-6 h-6 rounded-full bg-[#F59E0B] anim-amber border-2 border-[#111827] shadow-lg transition-all"></div>
+            </div>
+            <div class="mt-4 flex items-center gap-2 font-mono-code text-xs">
+              <span class="px-2.5 py-1 rounded bg-[#FEF3C7] text-[#B45309] font-bold border border-[#FDE68A]">Amber: 3 Pulses</span>
+              <span class="text-[#9CA3AF]">&rarr;</span>
+              <span class="px-2.5 py-1 rounded bg-white text-[#1C2321] font-bold border border-[#E5E2D9]">White: 2 Pulses</span>
+            </div>
+            <p class="text-[11px] font-mono-code text-emerald-400 mt-2 font-semibold">Decoded: Memory / RAM Subsystem Failure (No POST)</p>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-[#1C2321]">Test Other Common Dell Blink Codes:</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono-code">
+              <button onclick="setBlinkPattern('2,1', 'CPU Failure')" class="p-2.5 rounded border border-[#E5E2D9] hover:bg-[#F7F5F0] text-left">
+                <span class="font-bold text-[#B91C1C]">2 Amber, 1 White:</span> CPU Failure
+              </button>
+              <button onclick="setBlinkPattern('2,7', 'Display LCD Failure')" class="p-2.5 rounded border border-[#E5E2D9] hover:bg-[#F7F5F0] text-left">
+                <span class="font-bold text-[#B45309]">2 Amber, 7 White:</span> Display Cable / LCD
+              </button>
+              <button onclick="setBlinkPattern('3,2', 'Memory / RAM Error')" class="p-2.5 rounded border border-[#0F766E] bg-[#F0FDFA] text-left">
+                <span class="font-bold text-[#0F766E]">3 Amber, 2 White:</span> Memory / RAM Error
+              </button>
+              <button onclick="setBlinkPattern('3,3', 'Recovery Image Missing')" class="p-2.5 rounded border border-[#E5E2D9] hover:bg-[#F7F5F0] text-left">
+                <span class="font-bold text-[#525E59]">3 Amber, 3 White:</span> BIOS Recovery Fail
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:col-span-5 bg-white rounded-xl border border-[#E5E2D9] p-5 shadow-sm space-y-4">
+          <div>
+            <h3 class="text-sm font-bold text-[#1C2321]">Instant BIOS / Boot Menu Keys</h3>
+            <p class="text-xs text-[#525E59] mt-0.5">Search as you type for exact brand hotkeys.</p>
+          </div>
+          <input type="text" id="bios-search" oninput="filterBios(this.value)" placeholder="Search brand: Dell, HP, Lenovo, Asus..." class="w-full text-xs font-mono-code bg-[#F7F5F0] border border-[#E5E2D9] rounded-lg p-2.5 text-[#1C2321] focus:outline-none focus:ring-2 focus:ring-[#0F766E]">
+          <div id="bios-list" class="space-y-2.5 max-h-[380px] overflow-y-auto custom-scroll pr-1">
+            <div class="p-3 rounded-lg border border-[#E5E2D9] bg-[#F7F5F0]/60 flex items-center justify-between">
+              <div>
+                <span class="font-bold text-xs text-[#1C2321]">Dell (Inspiron, Vostro, XPS)</span>
+                <p class="text-[11px] text-[#525E59]">Tap rapidly right after pressing power</p>
+              </div>
+              <div class="flex items-center gap-1.5 font-mono-code text-xs">
+                <span class="px-2 py-1 bg-white border border-[#D5D0C3] rounded shadow-sm font-bold">[F2] BIOS</span>
+                <span class="px-2 py-1 bg-white border border-[#D5D0C3] rounded shadow-sm font-bold text-[#0F766E]">[F12] BOOT</span>
+              </div>
+            </div>
+            <div class="p-3 rounded-lg border border-[#E5E2D9] bg-[#F7F5F0]/60 flex items-center justify-between">
+              <div>
+                <span class="font-bold text-xs text-[#1C2321]">HP (Pavilion, Victus, 14s)</span>
+                <p class="text-[11px] text-[#525E59]">Press repeatedly immediately on startup</p>
+              </div>
+              <div class="flex items-center gap-1.5 font-mono-code text-xs">
+                <span class="px-2 py-1 bg-white border border-[#D5D0C3] rounded shadow-sm font-bold">[Esc] MENU</span>
+                <span class="px-2 py-1 bg-white border border-[#D5D0C3] rounded shadow-sm font-bold text-[#0F766E]">[F10] BIOS</span>
+              </div>
+            </div>
+            <div class="p-3 rounded-lg border border-[#E5E2D9] bg-[#F7F5F0]/60 flex items-center justify-between">
+              <div>
+                <span class="font-bold text-xs text-[#1C2321]">Lenovo (IdeaPad, ThinkPad)</span>
+                <p class="text-[11px] text-[#525E59]">Or look for paperclip Novo pinhole</p>
+              </div>
+              <div class="flex items-center gap-1.5 font-mono-code text-xs">
+                <span class="px-2 py-1 bg-white border border-[#D5D0C3] rounded shadow-sm font-bold">[F2] BIOS</span>
+                <span class="px-2 py-1 bg-white border border-[#D5D0C3] rounded shadow-sm font-bold text-[#0F766E]">[F12] BOOT</span>
+              </div>
+            </div>
+            <div class="p-3 rounded-lg border border-[#E5E2D9] bg-[#F7F5F0]/60 flex items-center justify-between">
+              <div>
+                <span class="font-bold text-xs text-[#1C2321]">Asus (VivoBook, TUF, ZenBook)</span>
+                <p class="text-[11px] text-[#525E59]">Hold key down before pressing power</p>
+              </div>
+              <div class="flex items-center gap-1.5 font-mono-code text-xs">
+                <span class="px-2 py-1 bg-white border border-[#D5D0C3] rounded shadow-sm font-bold">[F2] BIOS</span>
+                <span class="px-2 py-1 bg-white border border-[#D5D0C3] rounded shadow-sm font-bold text-[#0F766E]">[Esc] BOOT</span>
+              </div>
+            </div>
+            <div class="p-3 rounded-lg border border-[#E5E2D9] bg-[#F7F5F0]/60 flex items-center justify-between">
+              <div>
+                <span class="font-bold text-xs text-[#1C2321]">Acer (Aspire 5, Nitro)</span>
+                <p class="text-[11px] text-[#525E59]">F12 boot menu may need BIOS enable</p>
+              </div>
+              <div class="flex items-center gap-1.5 font-mono-code text-xs">
+                <span class="px-2 py-1 bg-white border border-[#D5D0C3] rounded shadow-sm font-bold">[F2] BIOS</span>
+                <span class="px-2 py-1 bg-white border border-[#D5D0C3] rounded shadow-sm font-bold text-[#0F766E]">[F12] BOOT</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 5: Service Docket -->
+    <section id="panel-slip" class="hidden space-y-6">
+      <div class="max-w-2xl mx-auto bg-white rounded-xl border border-[#E5E2D9] p-6 shadow-sm print:border-none print:shadow-none print:p-0">
+        <div class="flex items-center justify-between pb-4 border-b-2 border-[#1C2321]">
+          <div>
+            <div class="text-xs font-mono-code font-bold uppercase text-[#0F766E]">FixTrail Repair Network • Pune Engineering Hub</div>
+            <h1 class="text-xl font-bold tracking-tight text-[#1C2321] mt-0.5">STUDENT REPAIR BENCH INTAKE DOCKET</h1>
+          </div>
+          <div class="text-right font-mono-code text-xs">
+            <span class="font-bold text-[#1C2321]">DOCKET # FT-PUN-5567-09</span>
+            <div class="text-[10px] text-[#525E59]">19-Nov-2026 • 16:30 IST</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 py-4 border-b border-[#E5E2D9] text-xs font-mono-code">
+          <div>
+            <span class="text-[#525E59] block text-[10px] uppercase font-bold">Student Name & College</span>
+            <span class="text-[#1C2321] font-semibold text-sm">Tanmay Deshmukh</span>
+            <div class="text-[#525E59]">COEP Technological University (Block D-214)</div>
+          </div>
+          <div>
+            <span class="text-[#525E59] block text-[10px] uppercase font-bold">Hardware Specifications</span>
+            <span class="text-[#1C2321] font-semibold text-sm">Dell Inspiron 15 5567</span>
+            <div class="text-[#525E59]">Service Tag: 7G8X922 • i5-7200U / 8GB RAM</div>
+          </div>
+        </div>
+
+        <div class="py-4 border-b border-[#E5E2D9] space-y-3 text-xs">
+          <div>
+            <span class="font-mono-code font-bold text-[11px] text-[#1C2321] uppercase">Initial Reported Symptoms:</span>
+            <p class="text-[#525E59] mt-1 bg-[#F7F5F0] p-2.5 rounded border border-[#E5E2D9] font-mono-code">
+              Powers on -> fan spins for 4 seconds -> halts with black display. Front diagnostics LED indicates 3 Amber, 2 White rhythm.
+            </p>
+          </div>
+
+          <div>
+            <span class="font-mono-code font-bold text-[11px] text-[#1C2321] uppercase">Bench Inspection Checklist:</span>
+            <div class="grid grid-cols-2 gap-2 mt-1.5 font-mono-code text-[11px]">
+              <div class="flex items-center gap-2">
+                <span class="w-3.5 h-3.5 rounded border border-black flex items-center justify-center font-bold text-[9px]">X</span>
+                <span>Charger Voltage: 19.5V Verified</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-3.5 h-3.5 rounded border border-black flex items-center justify-center font-bold text-[9px]">X</span>
+                <span>Liquid Ingress Strips: White (Clean)</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-3.5 h-3.5 rounded border border-black flex items-center justify-center font-bold text-[9px]">X</span>
+                <span>Battery Pouch: Flat / No Gas Swell</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-3.5 h-3.5 rounded border border-black flex items-center justify-center font-bold text-[9px]">X</span>
+                <span>RAM Pin Oxidation Cleaned (Slot A)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4 flex items-center justify-between text-xs font-mono-code">
+          <div>
+            <div class="h-8 w-44 bg-black flex items-center justify-center text-white text-[9px] tracking-widest font-mono-code">
+              ||| | |||| || ||| |||| |
+            </div>
+            <span class="text-[9px] text-[#525E59]">SERIAL VALIDATION VERIFIED</span>
+          </div>
+          <div class="text-right">
+            <div class="border-b border-[#1C2321] w-36 mb-1"></div>
+            <span class="text-[10px] text-[#525E59]">Senior Bench Lead Signature</span>
+          </div>
+        </div>
+
+        <div class="no-print mt-6 pt-4 border-t border-[#E5E2D9] flex justify-end">
+          <button onclick="window.print()" class="px-4 py-2 rounded-lg bg-[#0F766E] hover:bg-[#115E59] text-white font-semibold text-xs flex items-center gap-2 shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            Print Service-Centre Docket
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="fixed bottom-5 right-5 z-50 bg-[#1C2321] text-white px-4 py-3 rounded-xl shadow-xl text-xs font-mono-code flex items-center gap-3 transform translate-y-24 opacity-0 transition-all duration-200">
+    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+    <span id="toast-msg">Report recorded. Helps 14 Pune engineering students.</span>
+  </div>
+
+  <script>
+    function setTab(tabId) {
+      const tabs = ['visualizer', 'triage', 'walkthrough', 'blink', 'slip'];
+      tabs.forEach(t => {
+        document.getElementById('panel-' + t).classList.add('hidden');
+        const btn = document.getElementById('tab-' + t);
+        if (btn) {
+          btn.classList.remove('bg-[#0F766E]', 'text-white', 'shadow-sm');
+          btn.classList.add('text-[#525E59]');
+        }
+      });
+      document.getElementById('panel-' + tabId).classList.remove('hidden');
+      const activeBtn = document.getElementById('tab-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-[#525E59]');
+        activeBtn.classList.add('bg-[#0F766E]', 'text-white', 'shadow-sm');
+      }
+    }
+
+    const componentData = {
+      ram: {
+        title: "DDR4 SODIMM RAM Slot & Contacts",
+        desc: "Dell Inspiron 15 5567 uses 2400MHz DDR4 SODIMM. Fine hostel dust and moisture cause microscopic copper oxidation, triggering the famous 3 Amber, 2 White memory failure POST halt.",
+        badge: "DIAGNOSTIC TARGET #1",
+        status: "Symptom: 3 Amber, 2 White",
+        steps: [
+          "Disconnect battery connector cable before touching RAM.",
+          "Use two thumbs to spread the silver clips outward until stick springs up at 30°.",
+          "Clean the gold fingers firmly with a clean white pencil eraser or 99% IPA.",
+          "Seat back firmly into DIMM Slot A at a 30° angle until you hear a sharp mechanical snap."
+        ]
+      },
+      battery: {
+        title: "42Wh Type WDX0R Lithium Pouch & Pull-Tab",
+        desc: "Lithium polymer battery cells degrade and produce hydrogen gas when kept plugged into hostel extensions 24/7. This pushes against the bottom of the trackpad.",
+        badge: "SAFETY PRIORITY #2",
+        status: "Fire / Expansion Risk",
+        steps: [
+          "Pull black ribbon tab horizontally towards the battery to disconnect.",
+          "Remove four M2.0x4mm wafer-head mounting screws.",
+          "Lift pack out gently by the reinforced plastic edges.",
+          "Never pry with metal screwdrivers near soft foil cells."
+        ]
+      },
+      fan: {
+        title: "Copper Heatpipe & Sunon Blower Fan",
+        desc: "Pune hostel bed blankets trap cotton lint inside cooling fins. The 7200U processor throttles to 0.79GHz or triggers thermal shutdown under code 2 Amber 1 White.",
+        badge: "THERMAL DIAGNOSTIC #3",
+        status: "RPM: 0 / Lint Clogged",
+        steps: [
+          "Remove 2 M2x3mm fan housing screws.",
+          "Disconnect 4-pin PWM fan harness with tweezers.",
+          "Peel back black tape and pick out lint carpet from radiator exhaust teeth.",
+          "Clean old dried grey thermal paste with 99% alcohol and reapply rice-grain pea of Arctic MX-4."
+        ]
+      },
+      cmos: {
+        title: "CR2032 3V Real-Time Clock Coin Cell",
+        desc: "Keeps BIOS clock and NVRAM settings alive. When dead (<2.7V), laptop takes up to 45 seconds on Dell logo or forgets boot drive priority upon AC disconnect.",
+        badge: "RTC COIN CELL #4",
+        status: "Voltage Check: 3.0V",
+        steps: [
+          "Slide plastic pick under retention spring.",
+          "Pop out CR2032 coin cell.",
+          "Short contacts for 10 seconds to execute complete hardware NVRAM clear.",
+          "Insert fresh Panasonic or Maxell 3V cell positive (+) side facing up."
+        ]
+      }
+    };
+
+    function inspectComponent(compKey) {
+      const data = componentData[compKey];
+      if (!data) return;
+      document.getElementById('inspect-title').innerText = data.title;
+      document.getElementById('inspect-desc').innerText = data.desc;
+      document.getElementById('inspect-badge').innerText = data.badge;
+      document.getElementById('inspect-status').innerText = data.status;
+
+      const stepsList = document.getElementById('inspect-steps');
+      stepsList.innerHTML = '';
+      data.steps.forEach(st => {
+        const li = document.createElement('li');
+        li.innerText = st;
+        stepsList.appendChild(li);
+      });
+
+      showToast("Inspecting: " + data.title);
+    }
+
+    function switchCase(val) {
+      inspectComponent(val);
+    }
+
+    const screwState = { 1: 2, 2: 8, 3: 4, 4: 1 };
+    function toggleScrew(bin) {
+      if (screwState[bin] > 0) {
+        screwState[bin]--;
+      } else {
+        screwState[bin] = bin === 1 ? 2 : bin === 2 ? 8 : bin === 3 ? 4 : 1;
+      }
+      const max = bin === 1 ? 2 : bin === 2 ? 8 : bin === 3 ? 4 : 1;
+      document.getElementById('screw-count-' + bin).innerText = screwState[bin] + '/' + max;
+      showToast("Screw Tray: " + screwState[bin] + " screws remaining in Bin #" + bin);
+    }
+
+    function resetScrews() {
+      screwState[1] = 2; screwState[2] = 8; screwState[3] = 4; screwState[4] = 1;
+      for (let i = 1; i <= 4; i++) {
+        const max = i === 1 ? 2 : i === 2 ? 8 : i === 3 ? 4 : 1;
+        document.getElementById('screw-count-' + i).innerText = max + '/' + max;
+      }
+      showToast("Magnetic tray reset to zero.");
+    }
+
+    function pickSymptom(symp) {
+      if (symp === 'liquid') {
+        document.getElementById('safety-alert').classList.remove('hidden');
+        document.getElementById('safety-text').innerHTML = "CRITICAL: Liquid spill detected. <strong>Do NOT press the power button or plug into charger.</strong> Invert the laptop on a towel in a 90° tent position to prevent moisture reaching power rails.";
+        showToast("Hazard Protocol Engaged: Liquid Ingress");
+      } else if (symp === 'swollen') {
+        document.getElementById('safety-alert').classList.remove('hidden');
+        document.getElementById('safety-text').innerHTML = "FIRE RISK: Bulging trackpad indicates expanding lithium battery pouch. Do not apply pressure or bend laptop. Disconnect charger immediately.";
+        showToast("Hazard Protocol Engaged: Swollen Lithium Cell");
+      } else {
+        document.getElementById('safety-alert').classList.add('hidden');
+        showToast("Symptom logged: " + symp + ". Loading safe walkthrough...");
+        setTimeout(() => setTab('walkthrough'), 500);
+      }
+    }
+
+    function checkKeywords(text) {
+      const lower = text.toLowerCase();
+      if (lower.includes('liquid') || lower.includes('water') || lower.includes('chai') || lower.includes('tea') || lower.includes('soup') || lower.includes('spill') || lower.includes('swollen') || lower.includes('smoke')) {
+        document.getElementById('safety-alert').classList.remove('hidden');
+      } else {
+        document.getElementById('safety-alert').classList.add('hidden');
+      }
+    }
+
+    function submitTriage() {
+      const val = document.getElementById('triage-input').value;
+      if (!val) return;
+      showToast("Triage analyzed: 14 matches in Pune repair database.");
+      setTimeout(() => setTab('visualizer'), 400);
+    }
+
+    let currentStep = 2;
+    function nextStep() {
+      if (currentStep < 4) {
+        currentStep++;
+        updateStepUI();
+      } else {
+        document.getElementById('outcome-gate').classList.remove('hidden');
+        document.getElementById('outcome-gate').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 1) {
+        currentStep--;
+        updateStepUI();
+      }
+    }
+
+    function updateStepUI() {
+      document.getElementById('step-number-text').innerText = "Step " + currentStep + " of 4";
+      document.getElementById('step-progress-fill').style.width = (currentStep / 4 * 100) + "%";
+      if (currentStep === 3) {
+        document.getElementById('walkthrough-step-title').innerText = "Reseat Memory Module (Gold Pin Clean)";
+      } else if (currentStep === 4) {
+        document.getElementById('walkthrough-step-title').innerText = "Cold Power On & Diagnostic Verification";
+      }
+      showToast("Navigated to Step " + currentStep);
+    }
+
+    function checkStepReady() {
+      const c1 = document.getElementById('check-1').checked;
+      const c2 = document.getElementById('check-2').checked;
+      const btn = document.getElementById('next-step-btn');
+      if (c1 && c2) {
+        btn.classList.add('ring-2', 'ring-offset-2', 'ring-[#0F766E]');
+      }
+    }
+
+    function triggerStuckHelp() {
+      showToast("Hostel Senior Help triggered: Pinging senior bench in Block D!");
+    }
+
+    function submitOutcome(type) {
+      document.getElementById('outcome-gate').classList.add('hidden');
+      showToast("Thanks! Your report helped 12 students with the same Dell Inspiron.");
+      setTimeout(() => setTab('slip'), 600);
+    }
+
+    let sec = 45;
+    setInterval(() => {
+      sec++;
+      const m = String(Math.floor(sec / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      const el = document.getElementById('step-timer');
+      if (el) el.innerText = m + ":" + s;
+    }, 1000);
+
+    function toggleScreenLock() {
+      const btn = document.getElementById('screen-lock-btn');
+      if (btn.innerText.includes('ON')) {
+        btn.innerText = "Keep Screen Awake: OFF";
+      } else {
+        btn.innerText = "Keep Screen Awake: ON";
+      }
+      showToast("Screen Lock Toggled");
+    }
+
+    function setBlinkPattern(pat, name) {
+      showToast("Simulating LED Code: " + pat + " (" + name + ")");
+    }
+
+    function filterBios(q) {
+      const items = document.querySelectorAll('#bios-list > div');
+      const term = q.toLowerCase();
+      items.forEach(it => {
+        if (it.innerText.toLowerCase().includes(term)) {
+          it.style.display = 'flex';
+        } else {
+          it.style.display = 'none';
+        }
+      });
+    }
+
+    let toastTimeout;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toast-msg').innerText = msg;
+      t.classList.remove('translate-y-24', 'opacity-0');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        t.classList.add('translate-y-24', 'opacity-0');
+      }, 2800);
+    }
+  </script>
+</body>
+</html>
