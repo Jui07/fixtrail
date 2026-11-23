@@ -32,8 +32,21 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' }
 }));
 
+const allowedOrigins = [
+  CLIENT_URL,
+  process.env.CLIENT_URL_PROD,
+  'http://localhost:3000'
+].filter(Boolean);
+
 app.use(cors({
-  origin: CLIENT_URL,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.some(o => origin.startsWith(o))) {
+      return callback(null, true);
+    }
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
 }));
